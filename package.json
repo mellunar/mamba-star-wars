@@ -12,10 +12,6 @@
   "license": "Apache-2.0",
   "author": "Stone Payments - Mamba Team",
   "contributors": [],
-  "engines": {
-    "node": ">=10 <=14",
-    "npm": ">=7 <=8"
-  },
   "scripts": {
     "start": "mamba app start",
     "build": "mamba app build",
@@ -82,11 +78,13 @@
     "@mamba/app": "^9.5.0",
     "@mamba/appbar": "^9.5.0",
     "@mamba/button": "^9.5.0",
+    "@mamba/collection": "^9.5.0",
     "@mamba/dialog": "^9.5.0",
     "@mamba/icon": "^9.5.0",
     "@mamba/pos": "^9.5.0",
     "@mamba/printable": "^9.5.0",
     "@mamba/styles": "^9.5.0",
+    "date-fns": "^2.29.3",
     "svelte": "2.16.1",
     "svelte-page": "^2.2.1"
   }

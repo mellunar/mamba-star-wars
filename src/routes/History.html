@@ -1,0 +1,68 @@
+<AppBarModifier title="Histórico" />
+
+{#if !history}
+  <div class="container">
+    Não há nenhum personagem no histórico. Volte para a <a href="/">página inicial</a> ou acesse a <a href="/character">página de personagem</a> para carregar.
+  </div>
+{/if}
+
+{#if history}
+  <Collection title="Histórico">
+    {#each history as item}
+      <Row label={item.name} rightLabel={"ID: " + item.id} description={"Acessado em: " + item.accessed} href="/character/{item.id}" />
+    {/each}
+  </Collection>
+{/if}
+
+<script>
+  import Storage from '@mamba/pos/api/storage.js';
+  import { format } from 'date-fns';
+
+  export default {
+    components: {
+      AppBarModifier: '@mamba/appbar/Modifier.html',
+      Collection: '@mamba/collection',
+      Row: '@mamba/collection/Row.html',
+    },
+    data() {
+      return {};
+    },
+    oncreate() {
+      this.set({ history: this.getCharacters() });
+    },
+    methods: {
+      getCharacters() {
+        const store = Storage.getItem('characters');
+
+        if (!store) {
+          return null;
+        }
+
+        const { ids } = store;
+
+        if (ids.length < 1) {
+          return null;
+        }
+
+        const entities = [];
+
+        ids.forEach((id) => {
+          const entity = store.entities[id];
+          const { accessed } = entity;
+          entity.accessed = format(new Date(accessed), "MM/dd/yyyy 'às' kk:mm");
+          entities.push(entity);
+        });
+
+        return entities;
+      },
+    },
+  };
+</script>
+
+<style type="text/postcss">
+  .container {
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }
+</style>

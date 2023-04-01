@@ -1,45 +1,45 @@
 <AppBarModifier title="Home" />
 
-<p>
-  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-  <br>
-  <br>
-  <a href="/about">About</a>
-</p>
+<div>
+  <p>
+    Ao acessar a página de personagem, um número aleatório até 50 é escolhido e então é feito uma chamada para a API do Star Wars para carregar o personagem com mesmo id do número. Se essa chamada for bem sucedida, os dados do personagem são salvos no estado local. Futuramente, se o número escolhido corresponder aos dados de um personagem que já foi salvo, os dados salvos serão carregados e uma nova chamada para a API não será feita.
+  </p>
 
-<Printable ref:printable>
-  Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga unde dicta at quisquam doloremque sunt soluta architecto debitis, sit quidem placeat qui nam expedita quod, mollitia suscipit porro saepe recusandae.
-</Printable>
+  <p>
+    A página de histórico contém uma lista com os nomes e ids dos personagens já carregados e a data em que cada um foi acessado. Ao clicar em um dos personagens, haverá um redirecionamento para a página de personagens com os dados do escolhido.
+  </p>
 
-<Button
-  size="full"
-  bottom
-  on:click="refs.dialog.open(2000)"
-  shortcut="enter"
->
-  Imprimir! (press. enter)
-</Button>
-
-<Dialog ref:dialog fullscreen>
-  <LoadingSprite />
-  <h1>Carregando...</h1>
-</Dialog>
+  <p>Páginas:</p>
+  <ul>
+    <li>
+      <a href="/character">Personagem</a>
+    </li>
+    <li>
+      <a href="/history">Histórico</a>
+    </li>
+  </ul>
+</div>
 
 <script>
   export default {
     components: {
       AppBarModifier: '@mamba/appbar/Modifier.html',
-      Printable: '@mamba/printable',
-      Button: '@mamba/button',
-      Dialog: '@mamba/dialog',
-      LoadingSprite: '@mamba/sprite/Loading.html',
     },
   };
 </script>
 
 <style type="text/postcss">
   p {
-    padding: 20px;
-    font-size: 22px;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  div {
+    padding: 0.5rem;
+  }
+
+  li {
+    font-size: 1.25rem;
+    margin-top: 1rem;
   }
 </style>

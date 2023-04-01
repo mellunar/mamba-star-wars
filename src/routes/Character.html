@@ -1,0 +1,158 @@
+<AppBarModifier title="Personagem" />
+
+<div class="container">
+  <div class="navigation">
+    <a href="/">Voltar</a>
+    <a href="/history">Histórico</a>
+  </div>
+
+  {#if !characterInfo}
+    <p>Carregando...</p>
+  {/if}
+
+  {#if characterInfo}
+    {#each characterInfo as row}
+      <p>{row}</p>
+    {/each}
+  {/if}
+</div>
+
+<Printable ref:printable>
+  {#if characterInfo}
+  {#each characterInfo as row}
+    <p>{row}</p>
+  {/each}
+{/if}
+</Printable>
+
+<Button
+  size="full"
+  bottom
+  on:click="refs.printable.print()"
+  shortcut="enter"
+>
+  Imprimir! (press. enter)
+</Button>
+
+<script>
+  import Http from '@mamba/pos/api/http.js';
+  import Storage from '@mamba/pos/api/storage.js';
+
+  export default {
+    components: {
+      AppBarModifier: '@mamba/appbar/Modifier.html',
+      Printable: '@mamba/printable',
+      Button: '@mamba/button',
+    },
+    data() {
+      return {};
+    },
+    oncreate() {
+      const { params } = this.get();
+
+      if (params.id) {
+        const character = this.getCharacter(params.id);
+        this.set({
+          characterInfo: this.setCharacterInfo(character),
+        });
+      } else {
+        this.getRandomCharacter();
+      }
+    },
+    methods: {
+      getCharacter(id) {
+        const store = Storage.getItem('characters');
+        return store ? store.entities[id] : null;
+      },
+      hasCharacter(id) {
+        const store = Storage.getItem('characters');
+        return store ? store.ids.includes(id) : false;
+      },
+      upsertCharacter(data) {
+        let entities = {};
+        let ids = [];
+        const store = Storage.getItem('characters');
+
+        if (store) {
+          entities = store.entities;
+          ids = store.ids;
+        }
+
+        entities[data.id] = data;
+
+        if (!ids.includes(data.id)) {
+          ids.push(data.id);
+        }
+
+        const updatedStore = {
+          entities,
+          ids,
+        };
+
+        Storage.setItem('characters', updatedStore);
+      },
+      setCharacterInfo(data) {
+        const keys = Object.keys(data);
+        const info = [];
+
+        keys.forEach((key) => {
+          // eslint-disable-next-line no-useless-escape
+          const value = JSON.stringify(data[key]).replace(/\"/gm, '');
+          info.push(`${key}: ${value}`);
+        });
+
+        return info;
+      },
+      getRandomCharacter() {
+        const random = Math.floor(Math.random() * 50);
+
+        if (this.hasCharacter(random)) {
+          const character = this.getCharacter(random);
+          this.set({
+            characterInfo: this.setCharacterInfo(character),
+          });
+          return;
+        }
+
+        const myRequest = {
+          url: `https://swapi.dev/api/people/${random}/`,
+          method: 'GET',
+        };
+
+        Http.send(myRequest)
+          .then((result) => {
+            const data = JSON.parse(result.body);
+            data.id = random;
+            data.accessed = new Date().toISOString();
+            this.upsertCharacter(data);
+
+            const character = this.getCharacter(random);
+            this.set({
+              characterInfo: this.setCharacterInfo(character),
+            });
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      },
+    },
+  };
+</script>
+
+<style type="text/postcss">
+  p {
+    font-size: 1rem;
+    padding-top: 0.5rem;
+  }
+
+  .container {
+    padding: 0.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>
